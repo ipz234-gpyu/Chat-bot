@@ -67,7 +67,7 @@ public class JsonRepository<T> implements IRepository<T> {
                 }
             }
         }
-            return result;
+        return result;
     }
 
     @Override
