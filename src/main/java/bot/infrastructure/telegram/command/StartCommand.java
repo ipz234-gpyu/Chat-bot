@@ -1,11 +1,16 @@
 package bot.infrastructure.telegram.command;
 
+import bot.domain.UserSession;
+import bot.infrastructure.telegram.command.service.CreateKeyboardDirector;
+import bot.infrastructure.telegram.enums.BotStateType;
+import bot.infrastructure.storage.SessionRepository;
 import bot.infrastructure.telegram.command.Interface.BotCommand;
 import bot.infrastructure.telegram.command.Interface.BotService;
-import bot.infrastructure.telegram.command.service.ParsHelper;
+import bot.util.BotSessionManager;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+
+import java.util.*;
 
 public class StartCommand implements BotCommand {
     private final BotService botService;
@@ -16,12 +21,25 @@ public class StartCommand implements BotCommand {
 
     @Override
     public void execute(Update update) {
+        SessionRepository sessionRepository = new SessionRepository(update.getMessage().getFrom().getId());
         Long chatId = update.getMessage().getChatId();
+        BotSessionManager.initSession(chatId, new UserSession(chatId));
 
         SendMessage msg = new SendMessage();
-        msg.setChatId(chatId.toString());
-        msg.setText("Ласкаво просимо! Оберіть сюжет:");
-        msg.setReplyMarkup(ParsHelper.createStoriesKeyboard());
+        msg.setChatId(update.getMessage().getChatId().toString());
+
+        msg.setText("\uD83E\uDDED Вітання, мандрівнику! На тебе чекає пригода — обери, з чого почнеться твоя історія.");
+        List<UserSession> userSessions = sessionRepository.getAll();
+
+        if (userSessions.isEmpty()) {
+            BotSessionManager.setState(chatId, BotStateType.SELECTING_STORY);
+            msg.setText("У вас ще немає збережених ігор. Розпочнемо нову!");
+            msg.setReplyMarkup(CreateKeyboardDirector.createStoriesKeyboard());
+        } else {
+            BotSessionManager.setState(chatId, BotStateType.SELECTING_SESSION);
+            msg.setText("Ось перелік ваших історій!");
+            msg.setReplyMarkup(CreateKeyboardDirector.createSessionKeyboard(userSessions));
+        }
 
         botService.sendMessage(msg);
     }

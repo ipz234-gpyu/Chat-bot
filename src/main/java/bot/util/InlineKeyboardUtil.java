@@ -1,11 +1,13 @@
 package bot.util;
 
+import bot.domain.Interface.Identifiable;
 import bot.domain.Story;
 import bot.domain.Character;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class InlineKeyboardUtil {
     public static InlineKeyboardMarkup confirmationButtons(String type) {
@@ -22,33 +24,21 @@ public class InlineKeyboardUtil {
         return new InlineKeyboardMarkup(buttons);
     }
 
-    public static InlineKeyboardMarkup createButtonsForStories(List<Story> stories) {
+    public static <T extends Identifiable> InlineKeyboardMarkup createButtons(
+            List<T> items,
+            String prefix
+    ) {
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
-        for (Story story : stories) {
+        for (T item : items) {
             InlineKeyboardButton button = new InlineKeyboardButton();
-            button.setText(story.getTitle());
-            button.setCallbackData("STORY:default:" + story.getId());
-
+            button.setText(item.toString());
+            button.setCallbackData(prefix.toUpperCase() + ":default:" + item.getId().toString());
             rows.add(Collections.singletonList(button));
         }
 
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         markup.setKeyboard(rows);
         return markup;
-    }
-
-    public static InlineKeyboardMarkup createButtonsForCharacters(List<Character> characters) {
-        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-
-        for (Character character : characters) {
-            InlineKeyboardButton button = new InlineKeyboardButton();
-            button.setText(character.getName());
-            button.setCallbackData("CHARACTER:default:" + character.getId());
-
-            rows.add(Collections.singletonList(button));
-        }
-
-        return new InlineKeyboardMarkup(rows);
     }
 }

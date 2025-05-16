@@ -1,13 +1,16 @@
 package bot.domain;
 
+import bot.domain.Interface.Identifiable;
+
 import java.util.List;
 import java.util.UUID;
 
-public class Story {
+public class Story implements Identifiable {
     private UUID id;
     private String title;
     private String description;
     private String prompt;
+    private String finalStory;
     private List<String> tags;
     //private StoryTree storyTree;
 
@@ -23,10 +26,12 @@ public class Story {
     }
 
     // Getters & Setters
+    @Override
     public UUID getId() {
         return id;
     }
 
+    @Override
     public void setId(UUID id) {
         this.id = id;
     }
@@ -55,6 +60,14 @@ public class Story {
         this.prompt = prompt;
     }
 
+    public String getFinalStory() {
+        return finalStory;
+    }
+
+    public void setFinalStory(String finalStory) {
+        this.finalStory = finalStory;
+    }
+
     public List<String> getTags() {
         return tags;
     }
@@ -65,12 +78,6 @@ public class Story {
 
     @Override
     public String toString() {
-        return "Story{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", prompt='" + prompt + '\'' +
-                ", tags=" + tags +
-                '}';
+        return getTitle();
     }
 }

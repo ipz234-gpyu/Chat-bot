@@ -1,19 +1,23 @@
 package bot.domain;
 
+import bot.domain.Interface.Identifiable;
+
 import java.util.Map;
 import java.util.UUID;
 
-public class Character {
+public class Character implements Identifiable {
     private UUID id;
     private String name;
     private String description;
     private String prompt;
     //private Map<String, Object> memory;
 
+    @Override
     public UUID getId() {
         return id;
     }
 
+    @Override
     public void setId(UUID id) {
         this.id = id;
     }
@@ -41,4 +45,7 @@ public class Character {
     public void setPrompt(String prompt) {
         this.prompt = prompt;
     }
+
+    @Override
+    public String toString() { return getName(); }
 }
