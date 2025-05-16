@@ -1,11 +1,15 @@
-package bot.infrastructure.enums;
+package bot.infrastructure.telegram.enums;
 
 public enum BotStateType {
     INIT_SESSION,
+    SELECTING_SESSION,
+    CONFIRMING_SESSION,
     SELECTING_STORY,
     CONFIRMING_STORY,
+    STORY_CREATE,
     SELECTING_CHARACTER,
     CONFIRMING_CHARACTER,
+    CHARACTER_CREATE,
     READY_TO_START,
     PLAYING
 }

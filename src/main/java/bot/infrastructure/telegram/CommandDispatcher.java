@@ -1,6 +1,8 @@
 package bot.infrastructure.telegram;
 
+import bot.infrastructure.telegram.enums.BotStateType;
 import bot.infrastructure.telegram.command.Interface.BotCommand;
+import bot.util.BotSessionManager;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.HashMap;
@@ -17,6 +19,7 @@ public class CommandDispatcher {
         if (update.hasCallbackQuery()) {
             String[] parts = update.getCallbackQuery().getData().split(":");
             BotCommand cmd = commandMap.get(parts[0]);
+            if (cmd == null) return;
 
             switch (parts[1]) {
                 case "CONFIRM" -> cmd.confirm(update);
@@ -24,11 +27,23 @@ public class CommandDispatcher {
                 default -> cmd.execute(update);
             }
         }
-        else if (update.hasMessage() && update.getMessage().hasText()) {
-            String text = update.getMessage().getText().trim().toLowerCase();
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            Long chatId = update.getMessage().getChatId();
+            String text = update.getMessage().getText().trim();
+
             BotCommand cmd = commandMap.get(text);
             if (cmd != null) {
                 cmd.execute(update);
+                return;
+            }
+
+            BotStateType state = BotSessionManager.getState(chatId);
+            if (state != null) {
+                String stateKey = state.name();
+                BotCommand stateCmd = commandMap.get(stateKey);
+                if (stateCmd != null) {
+                    stateCmd.execute(update);
+                }
             }
         }
     }

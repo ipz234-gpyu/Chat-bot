@@ -12,6 +12,7 @@ public class BotService implements bot.infrastructure.telegram.command.Interface
     }
 
     public void sendMessage(SendMessage message) {
+        message.setParseMode("HTML");
         try {
             sender.execute(message);
         } catch (TelegramApiException e) {
@@ -20,6 +21,7 @@ public class BotService implements bot.infrastructure.telegram.command.Interface
     }
 
     public void sendEditMessage(EditMessageText message) {
+        message.setParseMode("HTML");
         try {
             sender.execute(message);
         } catch (TelegramApiException e) {
