@@ -2,22 +2,20 @@ package bot.infrastructure.telegram.command;
 
 import bot.domain.Character;
 import bot.infrastructure.storage.CharacterRepository;
+import bot.infrastructure.storage.Interface.IRepository;
 import bot.infrastructure.telegram.command.service.AbstractCallbackCommand;
 import bot.infrastructure.telegram.command.Interface.BotService;
 import bot.infrastructure.telegram.command.service.CreateKeyboardDirector;
 import bot.infrastructure.telegram.enums.BotStateType;
 import bot.util.BotSessionManager;
-import bot.util.InlineKeyboardButtonBuilder;
 import bot.util.InlineKeyboardUtil;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import bot.infrastructure.telegram.command.service.ParsHelper;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
-import java.util.Collections;
 import java.util.UUID;
 
 public class CharacterSelectCommand extends AbstractCallbackCommand {
-    protected CharacterRepository characterRepository = new CharacterRepository();
+    protected IRepository<Character> characterRepository = new CharacterRepository();
 
     public CharacterSelectCommand(BotService botService) {
         super(botService);

@@ -1,6 +1,7 @@
 package bot.infrastructure.telegram.command;
 
 import bot.domain.Story;
+import bot.infrastructure.storage.Interface.IRepository;
 import bot.infrastructure.telegram.command.service.CreateKeyboardDirector;
 import bot.infrastructure.telegram.enums.BotStateType;
 import bot.infrastructure.openai.GeminiClient;
@@ -14,7 +15,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public class StoryCreateCommand extends AbstractCallbackCommand {
-    protected StoryRepository storyRepository = new StoryRepository();
+    protected IRepository<Story> storyRepository = new StoryRepository();
 
     public StoryCreateCommand(BotService botService) {
         super(botService);

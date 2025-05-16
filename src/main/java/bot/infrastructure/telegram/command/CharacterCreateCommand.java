@@ -1,6 +1,7 @@
 package bot.infrastructure.telegram.command;
 
 import bot.domain.Character;
+import bot.infrastructure.storage.Interface.IRepository;
 import bot.infrastructure.telegram.command.service.CreateKeyboardDirector;
 import bot.infrastructure.telegram.enums.BotStateType;
 import bot.infrastructure.openai.GeminiClient;
@@ -14,7 +15,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public class CharacterCreateCommand extends AbstractCallbackCommand {
-    protected CharacterRepository characterRepository = new CharacterRepository();
+    protected IRepository<Character> characterRepository = new CharacterRepository();
 
     public CharacterCreateCommand(BotService botService) {
         super(botService);

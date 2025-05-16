@@ -1,6 +1,7 @@
 package bot.infrastructure.telegram.command;
 
 import bot.domain.Story;
+import bot.infrastructure.storage.Interface.IRepository;
 import bot.infrastructure.storage.StoryRepository;
 import bot.infrastructure.telegram.command.service.*;
 import bot.infrastructure.telegram.enums.BotStateType;
@@ -11,7 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.UUID;
 
 public class StorySelectCommand extends AbstractCallbackCommand {
-    protected StoryRepository storyRepository = new StoryRepository();
+    protected IRepository<Story> storyRepository = new StoryRepository();
 
     public StorySelectCommand(BotService botService) {
         super(botService);

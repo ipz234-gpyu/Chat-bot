@@ -7,12 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.UUID;
 
 public class Player implements Identifiable {
-    private UUID userId;
+    private UUID playerId;
     private String username;
     private Map<String, String> additionalInfo;
 
-    public Player(UUID userId, String username) {
-        this.userId = userId;
+    public Player(String username) {
         this.username = username;
         this.additionalInfo = new LinkedHashMap<>();
     }
@@ -22,11 +21,11 @@ public class Player implements Identifiable {
     // Геттери та сеттери
 
     public UUID getId() {
-        return userId;
+        return playerId;
     }
 
     public void setId(UUID userId) {
-        this.userId = userId;
+        this.playerId = userId;
     }
 
     public String getUsername() {
