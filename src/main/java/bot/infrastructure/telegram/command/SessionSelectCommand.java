@@ -1,6 +1,8 @@
 package bot.infrastructure.telegram.command;
 
 import bot.domain.UserSession;
+import bot.infrastructure.storage.Interface.IRepository;
+import bot.infrastructure.storage.Interface.ISessionRepository;
 import bot.infrastructure.storage.SessionRepository;
 import bot.infrastructure.telegram.command.service.AbstractCallbackCommand;
 import bot.infrastructure.telegram.command.Interface.BotService;
@@ -21,7 +23,7 @@ public class SessionSelectCommand extends AbstractCallbackCommand {
     @Override
     public void execute(Update update) {
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        SessionRepository sessionRepository = new SessionRepository(update.getCallbackQuery().getFrom().getId());
+        ISessionRepository sessionRepository = new SessionRepository(update.getCallbackQuery().getFrom().getId());
         UserSession userSession  = sessionRepository.getById(UUID.fromString(ParsHelper.parseFromCallback(update)));
         BotSessionManager.initSession(chatId, userSession);
         BotSessionManager.setState(chatId, BotStateType.CONFIRMING_SESSION);
@@ -55,7 +57,7 @@ public class SessionSelectCommand extends AbstractCallbackCommand {
 
     @Override
     public void undo(Update update) {
-        SessionRepository sessionRepository = new SessionRepository(update.getCallbackQuery().getFrom().getId());
+        ISessionRepository sessionRepository = new SessionRepository(update.getCallbackQuery().getFrom().getId());
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         BotSessionManager.initSession(chatId, new UserSession(chatId));
         BotSessionManager.setState(chatId, BotStateType.SELECTING_SESSION);

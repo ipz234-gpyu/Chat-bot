@@ -2,14 +2,16 @@ package bot.infrastructure.telegram.command;
 
 import bot.domain.Player;
 import bot.domain.UserSession;
-import bot.infrastructure.storage.PlayerRepository;
-import bot.infrastructure.storage.SessionRepository;
+import bot.infrastructure.storage.*;
+import bot.infrastructure.storage.Interface.*;
 import bot.infrastructure.telegram.command.Interface.BotService;
 import bot.infrastructure.telegram.command.service.AbstractCallbackCommand;
 import bot.infrastructure.telegram.command.service.CreateKeyboardDirector;
 import bot.infrastructure.telegram.enums.BotStateType;
 import bot.util.BotSessionManager;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
+import java.util.List;
 
 public class SessionCreateCommand extends AbstractCallbackCommand {
     public SessionCreateCommand(BotService botService) {
@@ -28,18 +30,34 @@ public class SessionCreateCommand extends AbstractCallbackCommand {
 
     @Override
     public void confirm(Update update) {
-        SessionRepository sessionRepository = new SessionRepository(update.getCallbackQuery().getFrom().getId());
-        PlayerRepository playerRepository = new PlayerRepository(update.getCallbackQuery().getFrom().getId());
+        Long userId = update.getCallbackQuery().getFrom().getId();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
 
-        BotSessionManager.setState(chatId, BotStateType.READY_TO_START);
+        // 1. Отримання сесії
         UserSession userSession = BotSessionManager.getSession(chatId);
+        BotSessionManager.setState(chatId, BotStateType.READY_TO_START);
+
+        // 2. Ініціалізація репозиторіїв
+        ISessionRepository sessionRepository = new SessionRepository(userId);
+        IPlayerRepository playerRepository = new PlayerRepository(userId);
+        IStoryTreeRepository storyTreeRepository = new StoryTreeRepository(userId);
+        IStoryCharacterRepository storyCharacterRepository = new StoryCharacterRepository(userId);
+        IHistoryRepository historyRepository = new HistoryRepository(userId);
+
+        // 3. Збереження основної сесії
         sessionRepository.save(userSession);
 
-        Player player = new Player();
-        player.setUsername(update.getCallbackQuery().getFrom().getUserName());
+        // 4. Створення гравця
+        Player player = new Player(update.getCallbackQuery().getFrom().getLastName());
+        player.setId(userSession.getId());
         playerRepository.save(player);
 
+        // 5. Ініціалізація порожніх файлів
+        storyTreeRepository.saveAll(List.of(), userSession.getId());
+        storyCharacterRepository.saveAll(List.of(), userSession.getId());
+        historyRepository.saveAll(List.of(), userSession.getId());
+
+        // 6. Повідомлення
         editMessage(update,
                 "\uD83E\uDDD9 Гру створено! Готові розпочати цю захоплюючу історію?",
                 null);
@@ -47,7 +65,7 @@ public class SessionCreateCommand extends AbstractCallbackCommand {
 
     @Override
     public void undo(Update update) {
-        SessionRepository sessionRepository = new SessionRepository(update.getCallbackQuery().getFrom().getId());
+        ISessionRepository sessionRepository = new SessionRepository(update.getCallbackQuery().getFrom().getId());
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         BotSessionManager.initSession(chatId, new UserSession(chatId));
         BotSessionManager.setState(chatId, BotStateType.SELECTING_SESSION);

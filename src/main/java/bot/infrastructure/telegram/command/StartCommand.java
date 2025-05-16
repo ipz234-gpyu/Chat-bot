@@ -1,6 +1,8 @@
 package bot.infrastructure.telegram.command;
 
 import bot.domain.UserSession;
+import bot.infrastructure.storage.Interface.IRepository;
+import bot.infrastructure.storage.Interface.ISessionRepository;
 import bot.infrastructure.telegram.command.service.CreateKeyboardDirector;
 import bot.infrastructure.telegram.enums.BotStateType;
 import bot.infrastructure.storage.SessionRepository;
@@ -21,7 +23,7 @@ public class StartCommand implements BotCommand {
 
     @Override
     public void execute(Update update) {
-        SessionRepository sessionRepository = new SessionRepository(update.getMessage().getFrom().getId());
+        ISessionRepository sessionRepository = new SessionRepository(update.getMessage().getFrom().getId());
         Long chatId = update.getMessage().getChatId();
         BotSessionManager.initSession(chatId, new UserSession(chatId));
 
