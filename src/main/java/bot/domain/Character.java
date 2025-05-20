@@ -2,7 +2,6 @@ package bot.domain;
 
 import bot.domain.Interface.Identifiable;
 
-import java.util.Map;
 import java.util.UUID;
 
 public class Character implements Identifiable {

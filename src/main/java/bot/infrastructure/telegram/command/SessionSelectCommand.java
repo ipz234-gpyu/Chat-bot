@@ -1,18 +1,27 @@
 package bot.infrastructure.telegram.command;
 
+import bot.domain.Story;
+import bot.domain.Character;
 import bot.domain.UserSession;
+import bot.infrastructure.storage.CharacterRepository;
 import bot.infrastructure.storage.Interface.IRepository;
 import bot.infrastructure.storage.Interface.ISessionRepository;
 import bot.infrastructure.storage.SessionRepository;
+import bot.infrastructure.storage.StoryRepository;
 import bot.infrastructure.telegram.command.service.AbstractCallbackCommand;
 import bot.infrastructure.telegram.command.Interface.BotService;
 import bot.infrastructure.telegram.command.service.CreateKeyboardDirector;
 import bot.infrastructure.telegram.enums.BotStateType;
+import bot.infrastructure.telegram.command.service.ParsHelper;
 import bot.util.BotSessionManager;
+import bot.util.InlineKeyboardButtonBuilder;
 import bot.util.InlineKeyboardUtil;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import bot.infrastructure.telegram.command.service.ParsHelper;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 public class SessionSelectCommand extends AbstractCallbackCommand {
@@ -50,9 +59,26 @@ public class SessionSelectCommand extends AbstractCallbackCommand {
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         BotSessionManager.setState(chatId, BotStateType.READY_TO_START);
 
+        UserSession session = BotSessionManager.getSession(chatId);
+        IRepository<Story> storyRepository = new StoryRepository();
+        IRepository<Character> characterRepository = new CharacterRepository();
+
+        session.setSelectedStory(storyRepository.getById(session.getSelectedStoryId()));
+        session.setSelectedCharacter(characterRepository.getById(session.getSelectedCharacterId()));
+
+        InlineKeyboardButton button =
+                InlineKeyboardButtonBuilder.create()
+                        .text("РОЗПОЧАТИ!")
+                        .callbackData("PLAYING:default")
+                        .build();
+
+        List<InlineKeyboardButton> row = Collections.singletonList(button);
+        List<List<InlineKeyboardButton>> rows = Collections.singletonList(row);
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(rows);
+
         editMessage(update,
                 "⚔\uFE0F Готові продовжити цю захоплюючу історію?",
-                null);
+                markup);
     }
 
     @Override

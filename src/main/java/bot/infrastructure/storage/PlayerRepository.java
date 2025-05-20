@@ -6,7 +6,6 @@ import bot.infrastructure.storage.Interface.IPlayerRepository;
 import java.util.UUID;
 
 public class PlayerRepository extends JsonSessionRepository<Player> implements IPlayerRepository {
-
     public PlayerRepository(Long userId) {
         super(userId, "player.json", Player.class);
     }

@@ -1,5 +1,6 @@
 package bot.infrastructure.storage;
 
+import bot.domain.Stage;
 import bot.domain.StoryTreeNode;
 import bot.infrastructure.storage.Interface.IStoryTreeRepository;
 
@@ -16,12 +17,18 @@ public class StoryTreeRepository extends JsonSessionRepository<StoryTreeNode> im
     }
 
     @Override
-    public boolean addNode(StoryTreeNode node) {
-        return save(node) != null;
+    public boolean addNode(StoryTreeNode node, UUID sessionId) {
+        return save(node, sessionId) != null;
     }
 
     @Override
-    public List<StoryTreeNode> findByStage(int stage) {
+    public StoryTreeNode getLast(UUID sessionId){
+        List<StoryTreeNode> nodes = getAll(sessionId);
+        return nodes.isEmpty() ? null : nodes.get(nodes.size() - 1);
+    }
+
+    @Override
+    public List<StoryTreeNode> findByStage(Stage stage) {
         return getAll().stream()
                 .filter(n -> n.getStage() == stage)
                 .toList();

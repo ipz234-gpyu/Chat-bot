@@ -50,6 +50,7 @@ public class TelegramBotHandler extends TelegramLongPollingBot {
         dispatcher.register("SESSION_CREATE", new SessionCreateCommand(botService));
         dispatcher.register("STORY_CREATE", new StoryCreateCommand(botService));
         dispatcher.register("CHARACTER_CREATE", new CharacterCreateCommand(botService));
+        dispatcher.register("PLAYING", new PlayCommand(botService));
     }
 
     @Override
