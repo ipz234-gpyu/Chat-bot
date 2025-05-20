@@ -11,9 +11,9 @@ public class StoryTreeNode implements Identifiable {
     private String npcResponse;
     private String action;
     private List<String> options;
-    private int stage;
+    private Stage stage;
 
-    public StoryTreeNode(UUID id, String userResponse, String npcResponse, String action, List<String> options, int stage) {
+    public StoryTreeNode(UUID id, String userResponse, String npcResponse, String action, List<String> options, Stage stage) {
         this.id = id;
         this.userResponse = userResponse;
         this.npcResponse = npcResponse;
@@ -24,11 +24,11 @@ public class StoryTreeNode implements Identifiable {
 
     public StoryTreeNode() {}
 
-    public int getStage() {
+    public Stage getStage() {
         return stage;
     }
 
-    public void setStage(int stage) {
+    public void setStage(Stage stage) {
         this.stage = stage;
     }
 

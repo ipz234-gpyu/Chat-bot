@@ -8,7 +8,9 @@ import bot.infrastructure.storage.StoryRepository;
 import bot.util.InlineKeyboardButtonBuilder;
 import bot.util.InlineKeyboardUtil;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,6 +57,21 @@ public class CreateKeyboardDirector {
                         .build()
         ));
 
+        return markup;
+    }
+
+    public static InlineKeyboardMarkup storyOptionsButtons(List<String> options) {
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+
+        for (int i = 0; i < options.size(); i++) {
+            String option = options.get(i);
+            InlineKeyboardButton button = new InlineKeyboardButton(option);
+            button.setCallbackData("PLAYING:d:" + i);
+            rows.add(Collections.singletonList(button));
+        }
+
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+        markup.setKeyboard(rows);
         return markup;
     }
 }

@@ -9,8 +9,12 @@ import bot.infrastructure.telegram.command.service.AbstractCallbackCommand;
 import bot.infrastructure.telegram.command.service.CreateKeyboardDirector;
 import bot.infrastructure.telegram.enums.BotStateType;
 import bot.util.BotSessionManager;
+import bot.util.InlineKeyboardButtonBuilder;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.util.Collections;
 import java.util.List;
 
 public class SessionCreateCommand extends AbstractCallbackCommand {
@@ -35,7 +39,7 @@ public class SessionCreateCommand extends AbstractCallbackCommand {
 
         // 1. Отримання сесії
         UserSession userSession = BotSessionManager.getSession(chatId);
-        BotSessionManager.setState(chatId, BotStateType.READY_TO_START);
+        BotSessionManager.setState(chatId, BotStateType.PLAYING);
 
         // 2. Ініціалізація репозиторіїв
         ISessionRepository sessionRepository = new SessionRepository(userId);
@@ -57,10 +61,20 @@ public class SessionCreateCommand extends AbstractCallbackCommand {
         storyCharacterRepository.saveAll(List.of(), userSession.getId());
         historyRepository.saveAll(List.of(), userSession.getId());
 
+        InlineKeyboardButton button =
+                InlineKeyboardButtonBuilder.create()
+                        .text("РОЗПОЧАТИ!")
+                        .callbackData("PLAYING:default")
+                        .build();
+
+        List<InlineKeyboardButton> row = Collections.singletonList(button);
+        List<List<InlineKeyboardButton>> rows = Collections.singletonList(row);
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(rows);
+
         // 6. Повідомлення
         editMessage(update,
                 "\uD83E\uDDD9 Гру створено! Готові розпочати цю захоплюючу історію?",
-                null);
+                markup);
     }
 
     @Override

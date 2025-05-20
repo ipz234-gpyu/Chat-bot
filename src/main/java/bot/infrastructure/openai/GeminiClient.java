@@ -1,16 +1,14 @@
 package bot.infrastructure.openai;
 
+import bot.util.BotConfig;
 import com.google.genai.*;
-import com.google.genai.types.GenerateContentResponse;
-import io.github.cdimascio.dotenv.Dotenv;
 
 public class GeminiClient {
     private static GeminiClient instance;
-    private final Client client;
+    public final Client client;
 
     private GeminiClient() {
-        Dotenv dotenv = Dotenv.configure().load();
-        String apiKey = dotenv.get("GOOGLE_API_KEY");
+        String apiKey = BotConfig.OPENAI_API_KEY;
         this.client = Client.builder().apiKey(apiKey).build();
     }
 
@@ -19,12 +17,6 @@ public class GeminiClient {
             instance = new GeminiClient();
         }
         return instance;
-    }
-
-    public String generateText(String prompt) {
-        GenerateContentResponse response =
-                client.models.generateContent("gemini-2.0-flash-lite", prompt, null);
-        return response.text();
     }
 }
 

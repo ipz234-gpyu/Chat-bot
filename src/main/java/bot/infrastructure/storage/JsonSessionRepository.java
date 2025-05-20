@@ -27,6 +27,31 @@ public class JsonSessionRepository<T extends Identifiable> implements IRepositor
         }
     }
 
+    public T save(T item, UUID sessionId) {
+        if (item.getId() == null)
+            item.setId(UUID.randomUUID());
+        Path itemDir = baseDir.resolve(sessionId.toString());
+        Path jsonFilePath = itemDir.resolve(fileName);
+
+        try {
+            Files.createDirectories(itemDir);
+            List<T> items = new ArrayList<>();
+            if (Files.exists(jsonFilePath)) {
+                items = objectMapper.readValue(
+                        jsonFilePath.toFile(),
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, type)
+                );
+            }
+
+            items.add(item);
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(jsonFilePath.toFile(), items);
+            return item;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @Override
     public T save(T item) {
         if (item.getId() == null)
@@ -60,25 +85,34 @@ public class JsonSessionRepository<T extends Identifiable> implements IRepositor
 
     @Override
     public List<T> getAll() {
-        List<T> items = new ArrayList<>();
+        Path jsonFile = baseDir.resolve(fileName);
 
-        try (DirectoryStream<Path> dirs = Files.newDirectoryStream(baseDir)) {
-            for (Path dir : dirs) {
-                Path jsonFile = dir.resolve(fileName);
-                if (Files.exists(jsonFile)) {
-                    try {
-                        T item = objectMapper.readValue(jsonFile.toFile(), type);
-                        items.add(item);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+        if (Files.exists(jsonFile)) {
+            try {
+                return objectMapper.readValue(
+                        jsonFile.toFile(),
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, type)
+                );
+            } catch (IOException e) {
+                throw new RuntimeException("Не вдалося прочитати список із файлу " + jsonFile, e);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        return Collections.emptyList();
+    }
+    public List<T> getAll(UUID sessionId) {
+        Path jsonFile = baseDir.resolve(sessionId.toString()).resolve(fileName);
 
-        return items;
+        if (Files.exists(jsonFile)) {
+            try {
+                return objectMapper.readValue(
+                        jsonFile.toFile(),
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, type)
+                );
+            } catch (IOException e) {
+                throw new RuntimeException("Не вдалося прочитати список із файлу " + jsonFile, e);
+            }
+        }
+        return Collections.emptyList();
     }
 
     @Override

@@ -4,6 +4,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.14.0</version>
+                    <configuration>
+                        <compilerArgs>
+                            <arg>-parameters</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
     <groupId>bot</groupId>
     <artifactId>ChatBot</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -26,7 +43,7 @@
         <dependency>
             <groupId>com.google.genai</groupId>
             <artifactId>google-genai</artifactId>
-            <version>0.7.0</version>
+            <version>0.8.0</version>
         </dependency>
 
         <!-- Jackson for JSON -->
@@ -60,5 +77,4 @@
             <version>2.0.7</version>
         </dependency>
     </dependencies>
-
 </project>
